@@ -1,0 +1,2 @@
+# Local preview server only; the site is deployed as static files
+server.js
