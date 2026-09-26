@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" data-skin="midnight">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Talha Aker · Cybersecurity</title>
+<meta name="description" content="Talha Aker, cybersecurity student in Oslo. Network security, monitoring and secure development.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="Talha Aker, back to top"><span class="u">talha</span><span class="dim">@</span>aker<span class="dim">:~$</span><span class="caret" aria-hidden="true"></span></a>
+    <nav aria-label="Sections">
+      <ul class="links">
+        <li><a href="#about">~/about</a></li>
+        <li><a href="#skills">~/skills</a></li>
+        <li><a href="#projects">~/projects</a></li>
+        <li><a href="#experience">~/experience</a></li>
+        <li><a href="#contact">~/contact</a></li>
+      </ul>
+    </nav>
+    <div class="skins" id="skins" role="radiogroup" aria-label="Theme"></div>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="hero" id="top">
+    <div>
+      <p class="eyebrow">cybersecurity student · kristiania · oslo</p>
+      <h1>Finding the assumption a system <em>forgot it was making.</em></h1>
+      <p class="lede">I test networks, watch logs for what doesn't belong, and build software that expects to be attacked.</p>
+      <div class="cta">
+        <a class="btn primary" href="#projects">./projects</a>
+        <a class="btn" href="#contact">./contact</a>
+      </div>
+    </div>
+    <div class="term">
+      <div class="term-bar"><span>talha@aker · tty1</span><span class="live"><span class="dot"></span>connected</span></div>
+      <div class="term-body" id="term" aria-hidden="true"></div>
+      <p class="sr-only" id="term-sr"></p>
+    </div>
+  </section>
+
+  <section class="sec" id="about">
+    <div class="sec-head"><span class="path">~/about</span><h2>About</h2></div>
+    <div class="about">
+      <div>
+        <p>I'm a third-year cybersecurity student in Oslo. My degree covers <strong>network and system security, secure design and security monitoring</strong>, and most of my time goes into hands-on work with Nmap, Wireshark, Kali Linux and SIEM tools.</p>
+        <p>I like building the defensive side too, which is how ZeroTrust Sentinel started. Outside security I train MMA, which has taught me the discipline and focus under pressure that this field needs.</p>
+      </div>
+      <div class="idcard">
+        <figure class="photo">
+          <img id="photo" alt="Talha Aker" hidden>
+          <span class="initials" id="photo-fallback" aria-hidden="true">TA</span>
+          <figcaption class="photo-tag"><span class="dot"></span>id: talha-aker</figcaption>
+        </figure>
+        <dl class="kv">
+          <div><dt>study</dt><dd>BSc Cybersecurity, Kristiania</dd></div>
+          <div><dt>since</dt><dd>2024 → now</dd></div>
+          <div><dt>based</dt><dd>Oslo, Norway</dd></div>
+          <div><dt>speaks</dt><dd>Norwegian · English · Turkish</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="skills">
+    <div class="sec-head"><span class="path">~/skills</span><h2>Skills</h2></div>
+    <div class="scan" id="scan">
+      <div class="scan-cmd"><span class="pr">$</span> nmap -sV talha-aker</div>
+      <div class="scan-meta">Nmap scan report for talha-aker (127.0.0.1) · host is up</div>
+      <div class="scan-table" role="table" aria-label="Skills by area">
+        <div class="scan-row head" role="row"><span role="columnheader">port</span><span role="columnheader">state</span><span role="columnheader">service</span><span role="columnheader">tools</span></div>
+        <div id="scan-rows" role="rowgroup"></div>
+      </div>
+      <div class="scan-meta" id="scan-foot"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="projects">
+    <div class="sec-head"><span class="path">~/projects</span><h2>Projects</h2></div>
+    <div class="projects" id="project-list"></div>
+  </section>
+
+  <section class="sec" id="experience">
+    <div class="sec-head"><span class="path">~/experience</span><h2>Experience</h2></div>
+    <ol class="log" id="exp-list"></ol>
+  </section>
+
+  <section class="sec" id="contact">
+    <div class="sec-head"><span class="path">~/contact</span><h2>Contact</h2></div>
+    <div class="contact-grid">
+      <div>
+        <p class="big">Let's talk security.</p>
+        <p class="muted">Open to internships, part-time and graduate roles. Email is the fastest way to reach me.</p>
+      </div>
+      <div class="clist" id="contact-list"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap foot">
+  <span>© <span id="year"></span> Talha Aker</span>
+  <span>sha256 <span id="page-hash">…</span></span>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
