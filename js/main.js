@@ -194,57 +194,89 @@ $("#exp-list").innerHTML = DATA.experience.map(x => `
   </li>`).join("");
 
 /* ---------- experience: fingerprint scan ---------- */
-const fp = $(".fp-card"), fpStatus = $(".fp-status");
-const fpRows = [...fp.querySelectorAll(".fp-bin text")];
-const bits = n => Array.from({ length: n }, () => (Math.random() < .5 ? "0" : "1")).join("");
-let fpBusy = false;
-function scanPrint() {
-  if (reduced || fpBusy) return;
-  fpBusy = true;
-  fp.classList.remove("matched");
-  fp.classList.add("scanning");
-  fpStatus.textContent = "place finger…";
-  const start = performance.now() + 300, dur = 2200;
-  const frame = now => {
-    const t = Math.min(1, Math.max(0, (now - start) / dur));
-    const e = t < .5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;   // matches ease-in-out on the beam
-    const beamY = 25 + e * 337;
-    if (now >= start) fpStatus.textContent = `scanning ${String(Math.round(t * 100)).padStart(3, " ")}%`;
-    // digits near the beam get rewritten, like data being read off the print
-    fpRows.forEach(r => {
-      const near = Math.abs(+r.getAttribute("y") - beamY) < 22;
-      r.classList.toggle("hot", near);
-      if (near) r.textContent = [bits(8), bits(8), bits(8), bits(8)].join(" ");
-    });
-    if (t < 1) return requestAnimationFrame(frame);
-    fp.classList.replace("scanning", "matched");
-    fpStatus.textContent = "match · talha-aker · 99.4%";
-    setTimeout(() => { fp.classList.remove("matched"); fpStatus.textContent = "identity verified"; fpBusy = false; }, 2400);
-  };
-  requestAnimationFrame(frame);
-}
-fp.addEventListener("click", scanPrint);
-
-// minutiae markers: points picked along a few ridges, linked like a biometric template
+/* ---------- live code panel: types a security script when it scrolls into view ---------- */
 (() => {
-  const ridges = [...fp.querySelectorAll(".fp-ridges path")];
-  const picks = [[3, .15], [5, .55], [6, .9], [8, .3], [9, .72], [11, .05], [11, .5], [13, .28], [13, .85], [14, .62]];
-  const pts = picks.map(([r, f]) => { const el = ridges[r], p = el.getPointAtLength(el.getTotalLength() * f); return [p.x, p.y]; });
-  const order = [0, 3, 5, 7, 1, 4, 8, 9, 6, 2, 0];
-  const lines = order.slice(1).map((j, k) => { const [x1, y1] = pts[order[k]], [x2, y2] = pts[j]; return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`; }).join("");
-  $("#fp-nodes").innerHTML = lines + pts.map(([x, y]) => `<rect x="${x - 3.5}" y="${y - 3.5}" width="7" height="7"/>`).join("");
-  const nodes = [...fp.querySelectorAll(".fp-nodes rect")];
-  const svg = $(".fp", fp);
-  svg.addEventListener("pointermove", e => {
-    const m = svg.getScreenCTM().inverse(), pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(m);
-    nodes.forEach((n, i) => n.classList.toggle("near", Math.hypot(pts[i][0] - pt.x, pts[i][1] - pt.y) < 55));
-  });
-  svg.addEventListener("pointerleave", () => nodes.forEach(n => n.classList.remove("near")));
+  const code = $("#code-stream"), panel = $(".codepanel"), statusEl = $(".cp-status");
+  if (!code || !panel) return;
+
+  const SRC = [
+    "# sentinel.py · live threat watch",
+    "import asyncio",
+    "from sentinel import Model, Alert",
+    "",
+    "model = Model.load(\"isolation-forest\")",
+    "",
+    "async def watch(stream):",
+    "    async for ev in stream:",
+    "        s = model.score(ev)       # 0..1",
+    "        if ev.rule == \"T1003.001\" or s > .9:",
+    "            await Alert.critical(",
+    "                title=ev.describe(),",
+    "                source=ev.src_ip,",
+    "            )",
+    "            await respond(ev)     # isolate",
+    "            notify(soc, ev)       # + page",
+    "",
+    "asyncio.run(watch(events))",
+  ];
+
+  const KW = new Set("import from as async def await for while in if elif else or and not return None True False class with pass lambda".split(" "));
+  const tokenize = line => {
+    const out = [], re = /(#.*$)|("[^"]*"|'[^']*')|(\.\d+|\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)|(\s+)|([^\sA-Za-z0-9_]+)/g;
+    let m;
+    while ((m = re.exec(line))) {
+      if (m[1]) out.push(["c-com", m[1]]);
+      else if (m[2]) out.push(["c-str", m[2]]);
+      else if (m[3]) out.push(["c-num", m[3]]);
+      else if (m[4]) out.push([KW.has(m[4]) ? "c-kw" : (line[re.lastIndex] === "(" ? "c-fn" : ""), m[4]]);
+      else if (m[5]) out.push(["", m[5]]);
+      else out.push(["c-pun", m[6]]);
+    }
+    return out;
+  };
+  const html = line => tokenize(line).map(([c, t]) => c ? `<span class="${c}">${esc(t)}</span>` : esc(t)).join("") || "&nbsp;";
+
+  if (reduced) {
+    code.innerHTML = SRC.map(l => `<span class="cl">${html(l)}</span>`).join("");
+    return;
+  }
+
+  let running = false, stop = false, visible = false;
+
+  async function typeAll() {
+    if (running) return;
+    running = true; stop = false;
+    code.innerHTML = "";
+    if (statusEl) statusEl.textContent = "compiling…";
+    for (const line of SRC) {
+      if (stop) break;
+      const cl = document.createElement("span"); cl.className = "cl"; code.appendChild(cl);
+      const caret = document.createElement("span"); caret.className = "cp-caret"; cl.appendChild(caret);
+      if (line === "") { caret.remove(); cl.innerHTML = "&nbsp;"; await sleep(55); continue; }
+      for (const [c, t] of tokenize(line)) {
+        if (stop) break;
+        const span = document.createElement("span"); if (c) span.className = c;
+        cl.insertBefore(span, caret);
+        for (const ch of t) { span.textContent += ch; if (stop) break; await sleep(9 + Math.random() * 26); }
+      }
+      caret.remove();
+      if (cl.textContent === "") cl.innerHTML = "&nbsp;";
+      await sleep(line.trim().endsWith(":") ? 150 : 60);
+    }
+    const last = code.lastElementChild;
+    if (last && !stop) { const caret = document.createElement("span"); caret.className = "cp-caret"; last.appendChild(caret); }
+    if (statusEl) statusEl.textContent = "monitoring…";
+    running = false;
+    if (!stop && visible) { await sleep(5600); if (!stop && visible && !running) typeAll(); }
+  }
+
+  const obs = new IntersectionObserver(([en]) => {
+    visible = en.isIntersecting;
+    if (visible) { if (!running) typeAll(); }
+    else { stop = true; }
+  }, { threshold: 0.25 });
+  obs.observe(panel);
 })();
-const expObs = new IntersectionObserver(([en]) => {
-  if (en.isIntersecting) { scanPrint(); expObs.disconnect(); }
-}, { threshold: 0.4 });
-expObs.observe(fp);
 
 /* ---------- contact ---------- */
 $("#contact-list").innerHTML = DATA.contact.map((c, i) => `
