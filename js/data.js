@@ -66,22 +66,23 @@ const DATA = {
         "honeypot endpoints that log suspicious requests"
       ],
       stack: ["ASP.NET Core", "PostgreSQL", "Blazor WASM", "SignalR", "Docker"],
-      link: "https://github.com/t4lh8"
+      link: "https://github.com/t4lh8/ZeroTrust-Sentinel-AI-Based-Security-Platform"
     },
     {
-      name: "Python Port Scanner",
-      lang: "Python",
-      date: "2024",
-      tag: "Network Security",
-      status: { k: "system_status", v: "nominal" },
-      desc: "A TCP port scanner built from scratch to understand what tools like Nmap automate.",
+      name: "SOC Automation Home Lab",
+      lang: "Terraform",
+      date: "2026",
+      tag: "SOC / Blue Team",
+      status: { k: "att&ck", v: "T1003.001" },
+      desc: "A hands-on SOC that detects a real attack (Mimikatz credential dumping) on a Windows endpoint and automatically triages, enriches, documents and remediates it.",
       highlights: [
-        "TCP connect scanning with Python sockets",
-        "reports open ports for quick network analysis",
-        "tested only on hosts I own"
+        "custom Wazuh detection rules mapped to MITRE ATT&CK",
+        "SOAR workflow: VirusTotal enrichment, TheHive case, email, auto-response",
+        "human-in-the-loop approval before any destructive action",
+        "one-command deploy with Terraform + Docker (infrastructure as code)"
       ],
-      stack: ["Python", "socket", "GitHub"],
-      link: "https://github.com/t4lh8"
+      stack: ["Wazuh", "Shuffle", "TheHive", "Sysmon", "Terraform", "Docker"],
+      link: "https://github.com/t4lh8/SOC-Automation-Home-Lab"
     }
   ],
 
