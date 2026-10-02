@@ -55,7 +55,7 @@ const DATA = {
     {
       name: "ZeroTrust Sentinel",
       lang: "C#",
-      date: "01.2026 – 03.2026",
+      date: "01.2026 - 03.2026",
       tag: "Security Monitoring",
       status: { k: "threat level", v: "low", bar: 1 },
       desc: "A real-time security monitoring platform that flags suspicious logins, behaviour and traffic using AI-based anomaly detection.",
